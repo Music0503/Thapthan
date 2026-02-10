@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หลักสูตรวิทยาการคำนวณ - โรงเรียนทัพทันอนุสรณ์</title>
+    <meta name="description"
+        content="หลักสูตรวิทยาการคำนวณ โรงเรียนทัพทันอนุสรณ์ - ส่งเสริมทักษะการคิดเชิงคำนวณและเทคโนโลยี">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .curriculum-hero {
+            min-height: 420px;
+            background: linear-gradient(-45deg, #003580, #0a5eb8, #0074d9, #004ba0);
+            background-size: 400% 400%;
+            animation: heroGradient 12s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            margin-bottom: 60px;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .curriculum-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(79, 172, 254, 0.12) 0%, transparent 50%);
+        }
+
+        .curriculum-hero .hero-title {
+            font-size: 3.2rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .curriculum-hero .hero-subtitle {
+            position: relative;
+            z-index: 2;
+            font-size: 1.2rem;
+            opacity: 0.85;
+        }
+
+        /* Wave at bottom of hero */
+        .curriculum-hero .wave-divider {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            z-index: 3;
+            line-height: 0;
+        }
+
+        .curriculum-hero .wave-divider svg {
+            width: 100%;
+            height: 60px;
+        }
+
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            margin-bottom: 80px;
+        }
+
+        .chapter-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(10, 94, 184, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--accent-gold), var(--primary-blue-light));
+        }
+
+        .chapter-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .chapter-card:hover::after {
+            opacity: 1;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 215, 0, 0.25);
+        }
+
+        .chapter-icon {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, rgba(10, 94, 184, 0.08), rgba(79, 172, 254, 0.12));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .chapter-card:hover .chapter-icon {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            box-shadow: 0 6px 20px rgba(10, 94, 184, 0.3);
+            transform: scale(1.08);
+        }
+
+        .chapter-card:hover .chapter-icon img {
+            filter: brightness(10);
+        }
+
+        .chapter-icon img {
+            width: 40px;
+            height: 40px;
+            transition: var(--transition);
+        }
+
+        .chapter-number {
+            font-size: 0.85rem;
+            color: var(--primary-blue-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-desc {
+            color: var(--text-light);
+            margin-bottom: 28px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-learn {
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container navbar-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.svg" alt="Thapthan Anusorn School Logo" height="50">
+                <span class="logo-text">โรงเรียนทัพทันอนุสรณ์</span>
+            </a>
+            <button class="mobile-menu-btn" aria-label="Toggle navigation" id="mobile-menu-btn">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="index.html#about">เกี่ยวกับโรงเรียน</a></li>
+                <li><a href="index.html#news">ข่าวประชาสัมพันธ์</a></li>
+                <li><a href="index.html#staff">บุคลากร</a></li>
+                <li><a href="index.html#contact">ติดต่อเรา</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="curriculum-hero">
+        <div class="container">
+            <h1 class="hero-title" style="font-size: 3rem;">✨ วิทยาการคำนวณ</h1>
+            <p class="hero-subtitle">Computing Science Curriculum</p>
+        </div>
+        <div class="wave-divider">
+            <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,35 1440,30 L1440,60 L0,60 Z" fill="#ffffff" />
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="section-header animate-on-scroll">
+            <h2 class="section-title">บทเรียนที่น่าสนใจ</h2>
+            <div class="section-divider"></div>
+            <p style="margin-top: 20px; color: var(--text-light); font-size: 1.05rem;">
+                มุ่งเน้นให้ผู้เรียนมีทักษะการคิดวิเคราะห์ แก้ปัญหาอย่างเป็นขั้นตอน และรู้เท่าทันเทคโนโลยี
+            </p>
+        </div>
+
+        <div class="curriculum-grid">
+            <!-- Chapter 1 -->
+            <div class="chapter-card animate-on-scroll animate-delay-1">
+                <div class="chapter-icon">
+                    <img src="images/cs-icon.svg" alt="Icon">
+                </div>
+                <span class="chapter-number">Chapter 01</span>
+                <h3 class="chapter-title">🧠 แนวคิดเชิงคำนวณ</h3>
+                <p class="chapter-desc">
+                    (Computational Thinking) เรียนรู้กระบวนการแก้ปัญหาอย่างเป็นระบบ การแตกปัญหาใหญ่เป็นปัญหาย่อย
+                    การหารูปแบบ และการสร้างอัลกอริทึม
+                </p>
+                <a href="chapter1.html" class="btn btn-outline btn-learn">เข้าสู่บทเรียน</a>
+            </div>
+
+            <!-- Chapter 2 -->
+            <div class="chapter-card animate-on-scroll animate-delay-2">
+                <div class="chapter-icon">
+                    <img src="images/cs-icon.svg" alt="Icon">
+                </div>
+                <span class="chapter-number">Chapter 02</span>
+                <h3 class="chapter-title">💻 เทคโนโลยีดิจิทัล</h3>
+                <p class="chapter-desc">
+                    (Digital Technology) ศึกษาการทำงานของระบบคอมพิวเตอร์ เครือข่ายอินเทอร์เน็ต การใช้ซอฟต์แวร์
+                    และการประยุกต์ใช้เทคโนโลยีในชีวิตประจำวัน
+                </p>
+                <a href="chapter2.html" class="btn btn-outline btn-learn">เข้าสู่บทเรียน</a>
+            </div>
+
+            <!-- Chapter 3 -->
+            <div class="chapter-card animate-on-scroll animate-delay-3">
+                <div class="chapter-icon">
+                    <img src="images/cs-icon.svg" alt="Icon">
+                </div>
+                <span class="chapter-number">Chapter 03</span>
+                <h3 class="chapter-title">📰 การรู้เท่าทันสื่อ</h3>
+                <p class="chapter-desc">
+                    (Media Literacy) สร้างภูมิคุ้มกันทางดิจิทัล การวิเคราะห์ข้อมูลข่าวสาร กฎหมายคอมพิวเตอร์
+                    และมารยาทในการใช้อินเทอร์เน็ตอย่างปลอดภัย
+                </p>
+                <a href="chapter3.html" class="btn btn-outline btn-learn">เข้าสู่บทเรียน</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3 class="footer-brand">โรงเรียนทัพทันอนุสรณ์</h3>
+                    <p>สร้างเยาวชนรุ่นใหม่ ให้ก้าวไกลทันโลก</p>
+                </div>
+                <div class="footer-links">
+                    <h4>เมนูลัด</h4>
+                    <ul>
+                        <li><a href="index.html">หน้าแรก</a></li>
+                        <li><a href="curriculum.html">หลักสูตร</a></li>
+                        <li><a href="index.html#contact">ติดต่อ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 โรงเรียนทัพทันอนุสรณ์. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        mobileBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileBtn.classList.toggle('active');
+        });
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>

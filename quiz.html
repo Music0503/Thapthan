@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 แบบทดสอบ - วิทยาการคำนวณ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+        }
+
+        /* Game Container */
+        .game-wrapper {
+            max-width: 700px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Top HUD */
+        .game-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .hud-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 10px 18px;
+            color: #fff;
+            text-align: center;
+            flex: 1;
+        }
+
+        .hud-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .hud-value.score-val {
+            color: #f4c430;
+        }
+
+        .hud-value.question-val {
+            color: #4facfe;
+        }
+
+        .hud-value.timer-val {
+            color: #ff6b6b;
+        }
+
+        /* Progress */
+        .game-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .game-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 35px;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-10px);
+            }
+
+            40% {
+                transform: translateX(10px);
+            }
+
+            60% {
+                transform: translateX(-6px);
+            }
+
+            80% {
+                transform: translateX(6px);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .question-card.shake {
+            animation: shake 0.5s ease;
+        }
+
+        .question-card.bounce {
+            animation: bounce 0.4s ease;
+        }
+
+        .q-number {
+            color: #4facfe;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .q-text {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Options */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .option-btn .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+
+        .option-btn.correct {
+            background: rgba(40, 167, 69, 0.25);
+            border-color: #28a745;
+            animation: bounce 0.4s ease;
+        }
+
+        .option-btn.correct .option-letter {
+            background: #28a745;
+        }
+
+        .option-btn.wrong {
+            background: rgba(220, 53, 69, 0.25);
+            border-color: #dc3545;
+        }
+
+        .option-btn.wrong .option-letter {
+            background: #dc3545;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .option-btn.show-correct {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.15);
+        }
+
+        .option-btn.show-correct .option-letter {
+            background: #28a745;
+        }
+
+        /* Feedback */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback-box.show {
+            display: block;
+        }
+
+        .feedback-box.correct-feedback {
+            background: rgba(40, 167, 69, 0.15);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .feedback-box.wrong-feedback {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .feedback-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .feedback-title {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feedback-explain {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Next Button */
+        .next-btn-area {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .next-btn-area.show {
+            display: block;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            color: #0f0c29;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.6);
+        }
+
+        /* Streak */
+        .streak-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 3rem;
+            font-weight: 800;
+            color: #f4c430;
+            text-shadow: 0 0 30px rgba(244, 196, 48, 0.5);
+            z-index: 100;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .streak-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            animation: streakAnim 1s ease forwards;
+        }
+
+        @keyframes streakAnim {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            30% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+
+            70% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -70%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 60px 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+        }
+
+        .start-screen h1 {
+            color: #fff;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .start-screen .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .start-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .start-info-item {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        .start-info-item span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4facfe;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #f4c430, #ff9800);
+            border: none;
+            color: #1a1a1a;
+            padding: 18px 60px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(244, 196, 48, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(244, 196, 48, 0.6);
+        }
+
+        /* Result Screen */
+        .result-screen {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4facfe, #f4c430);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .result-detail {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .result-stats {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 15px 20px;
+            min-width: 100px;
+        }
+
+        .stat-box .stat-num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-box .stat-lbl {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-box.green .stat-num {
+            color: #28a745;
+        }
+
+        .stat-box.red .stat-num {
+            color: #dc3545;
+        }
+
+        .stat-box.yellow .stat-num {
+            color: #f4c430;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            font-size: 1rem;
+        }
+
+        /* Timer warning */
+        .timer-warning {
+            animation: pulse 0.5s ease infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        @media (max-width: 600px) {
+            .game-wrapper {
+                margin-top: 90px;
+            }
+
+            .start-screen h1 {
+                font-size: 1.6rem;
+            }
+
+            .question-card {
+                padding: 22px;
+            }
+
+            .q-text {
+                font-size: 1.1rem;
+            }
+
+            .hud-value {
+                font-size: 1.2rem;
+            }
+
+            .result-score {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" style="background: rgba(15, 12, 41, 0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+        <div class="container navbar-content">
+            <a href="index.html" class="logo" style="color: #fff;">
+                <img src="images/logo.svg" alt="Logo" height="50">
+                <span class="logo-text">โรงเรียนทัพทันอนุสรณ์</span>
+            </a>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <span class="bar" style="background: #fff;"></span>
+                <span class="bar" style="background: #fff;"></span>
+                <span class="bar" style="background: #fff;"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" style="color: rgba(255,255,255,0.8);">หน้าแรก</a></li>
+                <li><a href="curriculum.html" style="color: rgba(255,255,255,0.8);">หลักสูตร</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Streak popup -->
+    <div class="streak-popup" id="streakPopup"></div>
+
+    <!-- Game Wrapper -->
+    <div class="game-wrapper" id="gameWrapper">
+
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h1 id="quizTitle">🎮 แบบทดสอบหลังเรียน</h1>
+            <p class="subtitle" id="quizSubtitle">กำลังโหลด...</p>
+            <div class="start-info">
+                <div class="start-info-item">
+                    <span>10</span>
+                    คำถาม
+                </div>
+                <div class="start-info-item">
+                    <span>20 วิ</span>
+                    ต่อข้อ
+                </div>
+                <div class="start-info-item">
+                    <span>🏆</span>
+                    ท้าทาย!
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGame()">🚀 เริ่มทำแบบทดสอบ</button>
+        </div>
+
+        <!-- Game HUD (hidden initially) -->
+        <div id="gameArea" style="display: none;">
+            <div class="game-hud">
+                <div class="hud-item">
+                    <div class="hud-label">คะแนน</div>
+                    <div class="hud-value score-val" id="hudScore">0</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">ข้อที่</div>
+                    <div class="hud-value question-val" id="hudQuestion">1/10</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">เวลา</div>
+                    <div class="hud-value timer-val" id="hudTimer">20</div>
+                </div>
+            </div>
+
+            <div class="game-progress">
+                <div class="game-progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Question Container -->
+            <div id="questionContainer"></div>
+        </div>
+
+        <!-- Result Screen (hidden) -->
+        <div class="result-screen" id="resultScreen"></div>
+    </div>
+
+    <script>
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const navLinksEl = document.getElementById('nav-links');
+        mobileBtn.addEventListener('click', () => {
+            navLinksEl.classList.toggle('active');
+            mobileBtn.classList.toggle('active');
+        });
+
+        // Quiz Database
+        const quizDatabase = {
+            1: {
+                title: "บทที่ 1: แนวคิดเชิงคำนวณ",
+                questions: [
+                    {
+                        question: "แนวคิดเชิงคำนวณ (Computational Thinking) คืออะไร?",
+                        options: [
+                            "การเขียนโปรแกรมคอมพิวเตอร์เท่านั้น",
+                            "กระบวนการแก้ปัญหาอย่างเป็นขั้นตอนที่สามารถนำไปปฏิบัติได้",
+                            "การใช้เครื่องคิดเลขแก้โจทย์คณิตศาสตร์",
+                            "การซ่อมบำรุงคอมพิวเตอร์"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! แนวคิดเชิงคำนวณเป็นกระบวนการแก้ปัญหาอย่างเป็นขั้นตอน โดยใช้หลักคิดที่ทั้งมนุษย์และคอมพิวเตอร์สามารถเข้าใจและนำไปปฏิบัติได้",
+                        explanationWrong: "ไม่ถูกต้อง! แนวคิดเชิงคำนวณ ไม่ใช่แค่การเขียนโปรแกรม แต่เป็น 'กระบวนการคิดแก้ปัญหาอย่างเป็นระบบ' ที่ใช้ได้ทั้งในชีวิตจริงและคอมพิวเตอร์"
+                    },
+                    {
+                        question: "แนวคิดเชิงคำนวณประกอบด้วยกี่องค์ประกอบหลัก?",
+                        options: [
+                            "2 องค์ประกอบ",
+                            "3 องค์ประกอบ",
+                            "4 องค์ประกอบ",
+                            "5 องค์ประกอบ"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "เก่งมาก! มี 4 องค์ประกอบ ได้แก่ Decomposition, Pattern Recognition, Abstraction และ Algorithm Design",
+                        explanationWrong: "ไม่ถูกครับ! คำตอบที่ถูกคือ 4 องค์ประกอบสำคัญในการคิดแบบคอมพิวเตอร์"
+                    },
+                    {
+                        question: "การแยกย่อย (Decomposition) หมายถึงอะไร?",
+                        options: [
+                            "การรวมปัญหาหลายอย่างเข้าด้วยกัน",
+                            "การแตกปัญหาใหญ่ให้เป็นปัญหาย่อยๆ ที่จัดการได้ง่ายขึ้น",
+                            "การลบข้อมูลที่ไม่จำเป็นออก",
+                            "การเรียงลำดับขั้นตอนการทำงาน"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ยอดเยี่ยม! Decomposition คือการแตกปัญหาใหญ่ให้เล็กลง เพื่อให้จัดการและแก้ไขได้ง่ายขึ้น",
+                        explanationWrong: "ผิดครับ! Decomposition คือการ 'แตกปัญหา' ไม่ใช่การรวมหรือลบข้อมูล"
+                    },
+                    {
+                        question: "ข้อใดเป็นตัวอย่างของ Pattern Recognition?",
+                        options: [
+                            "การแบ่งงานโปรเจกต์เป็นขั้นตอนย่อย",
+                            "การสังเกตว่าโจทย์คณิตศาสตร์หลายข้อใช้สูตรเดียวกัน",
+                            "การตัดรายละเอียดที่ไม่สำคัญออก",
+                            "การเขียนผังงาน (Flowchart)"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Pattern Recognition คือการหารูปแบบที่ซ้ำกัน เพื่อนำวิธีแก้เดิมมาใช้ใหม่ได้",
+                        explanationWrong: "ไม่ถูกครับ! การหารูปแบบคือการสังเกตความเหมือนหรือความสัมพันธ์ของปัญหา"
+                    },
+                    {
+                        question: "Abstraction (แนวคิดเชิงนามธรรม) มีจุดประสงค์หลักคืออะไร?",
+                        options: [
+                            "เพิ่มรายละเอียดทั้งหมดเข้าไปในปัญหา",
+                            "มุ่งเน้นเฉพาะส่วนที่สำคัญ จัดการกับความซับซ้อน",
+                            "แยกปัญหาออกเป็นส่วนย่อย",
+                            "จัดเรียงลำดับขั้นตอนการทำงาน"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "เยี่ยม! Abstraction คือการคัดเลือกเฉพาะสิ่งที่สำคัญและตัดรายละเอียดที่ไม่จำเป็นทิ้งไป",
+                        explanationWrong: "ผิดครับ! Abstraction คือการตัดรายละเอียดที่ไม่สำคัญออก ไม่ใช่การเพิ่ม"
+                    },
+                    {
+                        question: "ข้อใดเป็นตัวอย่างของ Abstraction ที่ดีที่สุด?",
+                        options: [
+                            "แผนที่รถไฟฟ้า (แสดงเฉพาะสถานีและเส้นทาง)",
+                            "สมุดโทรศัพท์ที่มีเบอร์ทุกคนในประเทศ",
+                            "ภาพถ่ายดาวเทียมที่ละเอียดทุกจุด",
+                            "การจำลองโมเดลรถยนต์ขนาดเท่าของจริง"
+                        ],
+                        answer: 0,
+                        explanationCorrect: "ฉลาดมาก! แผนที่รถไฟฟ้าตัดรายละเอียดตึกถนนออก เหลือแค่เส้นทางสถานี ซึ่งเป็นข้อมูลที่จำเป็นในการเดินทาง",
+                        explanationWrong: "ไม่ถูกครับ! แผนที่รถไฟฟ้าที่ตัดรายละเอียดยิบย่อยออกคือตัวอย่างที่ดีของการคิดเชิงนามธรรม"
+                    },
+                    {
+                        question: "Algorithm Design คืออะไร?",
+                        options: [
+                            "การวาดรูปศิลปะ",
+                            "การออกแบบลำดับขั้นตอนการแก้ปัญหาอย่างเป็นระบบ",
+                            "การคิดเลขเร็ว",
+                            "การจดจำข้อมูลจำนวนมาก"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "สุดยอด! Algorithm คือลำดับขั้นตอนที่ชัดเจน ตั้งแต่ต้นจนจบ เพื่อให้ได้ผลลัพธ์ที่ต้องการ",
+                        explanationWrong: "ผิดครับ! Algorithm คือการออกแบบ 'ขั้นตอนการทำงาน' ไม่ใช่ศิลปะหรือการจำ"
+                    },
+                    {
+                        question: "การทำตามสูตรอาหาร ถือเป็นการใช้แนวคิดใด?",
+                        options: [
+                            "Decomposition",
+                            "Pattern Recognition",
+                            "Abstraction",
+                            "Algorithm Design"
+                        ],
+                        answer: 3,
+                        explanationCorrect: "ถูกต้อง! สูตรอาหารมีลำดับขั้นตอน 1, 2, 3 ที่ชัดเจนและทำตามได้ผลลัพธ์แน่นอน นี่คือ Algorithm",
+                        explanationWrong: "ไม่ถูกครับ! สูตรอาหารเป็นขั้นตอนการทำงานที่ชัดเจน ตรงกับ Algorithm Design"
+                    },
+                    {
+                        question: "CT (Computational Thinking) จำเป็นต้องใช้คอมพิวเตอร์หรือไม่?",
+                        options: [
+                            "จำเป็นเสมอ",
+                            "ไม่จำเป็น สามารถใช้ในชีวิตประจำวันได้",
+                            "ใช้ได้เฉพาะกับหุ่นยนต์",
+                            "ใช้เฉพาะตอนเล่นเกม"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "เก่งมาก! CT เป็นกระบวนการคิดของมนุษย์ที่ใช้แก้ปัญหาอะไรก็ได้ ไม่จำกัดแค่คอมพิวเตอร์",
+                        explanationWrong: "ไม่ถูกครับ! CT เป็นทักษะการคิด (Thinking Skill) ใช้แก้ปัญหาชีวิตประจำวันได้โดยไม่ต้องมีคอมฯ"
+                    },
+                    {
+                        question: "ใครควรเรียนรู้แนวคิดเชิงคำนวณ?",
+                        options: [
+                            "โปรแกรมเมอร์เท่านั้น",
+                            "นักวิทยาศาสตร์เท่านั้น",
+                            "ทุกคนในยุคดิจิทัล",
+                            "ช่างซ่อมคอมพิวเตอร์"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้องที่สุด! CT เป็นทักษะพื้นฐานที่สำคัญสำหรับทุกคนในการแก้ปัญหาและใช้ชีวิตในยุคปัจจุบัน",
+                        explanationWrong: "ผิดครับ! CT เป็นทักษะสากลที่ทุกคนควรมี ไม่ใช่แค่เฉพาะอาชีพสายคอมพิวเตอร์"
+                    }
+                ]
+            },
+            2: {
+                title: "บทที่ 2: เทคโนโลยีดิจิทัล",
+                questions: [
+                    {
+                        question: "Internet of Things (IoT) หมายถึงอะไร?",
+                        options: [
+                            "การใช้อินเทอร์เน็ตเพื่อดูหนัง",
+                            "อุปกรณ์ต่างๆ ที่เชื่อมโยงและส่งข้อมูลถึงกันได้ผ่านอินเทอร์เน็ต",
+                            "โปรแกรมแชทพูดคุย",
+                            "เกมออนไลน์"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! IoT คือการที่สิ่งของต่างๆ (Things) เชื่อมต่ออินเทอร์เน็ตและคุยกันได้ เช่น สั่งเปิดแอร์จากมือถือ",
+                        explanationWrong: "ไม่ถูกครับ! IoT คือ 'อุปกรณ์' ที่เชื่อมเน็ตได้ ไม่ใช่แค่การดูหนังหรือเล่นเกม"
+                    },
+                    {
+                        question: "ข้อใดเป็นตัวอย่างของอุปกรณ์ IoT?",
+                        options: [
+                            "พัดลมธรรมดา",
+                            "ตู้เสื้อผ้าไม้",
+                            "หลอดไฟอัจฉริยะที่สั่งงานผ่านมือถือได้",
+                            "หนังสือพิมพ์"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "เยี่ยม! หลอดไฟที่ต่อเน็ตและสั่งงานได้คือตัวอย่างของ Smart Device หรือ IoT",
+                        explanationWrong: "ผิดครับ! ของที่เป็น IoT ต้องเชื่อมต่ออินเทอร์เน็ตหรือสั่งงานผ่านระบบเครือข่ายได้"
+                    },
+                    {
+                        question: "AI ย่อมาจากคำว่าอะไร?",
+                        options: [
+                            "Artificial Intelligence",
+                            "Advanced Internet",
+                            "Automatic Information",
+                            "Apple iPhone"
+                        ],
+                        answer: 0,
+                        explanationCorrect: "ถูกต้อง! AI ย่อมาจาก Artificial Intelligence หรือ ปัญญาประดิษฐ์",
+                        explanationWrong: "ไม่ถูกครับ! AI = Artificial Intelligence (ปัญญาประดิษฐ์)"
+                    },
+                    {
+                        question: "Cloud Computing คือบริการเกี่ยวกับอะไร?",
+                        options: [
+                            "การพยากรณ์อากาศ",
+                            "การให้บริการทรัพยากรคอมพิวเตอร์ผ่านอินเทอร์เน็ต",
+                            "การบินโดรนบนท้องฟ้า",
+                            "การส่งจดหมายทางไปรษณีย์"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "เก่งมาก! Cloud Computing คือการใช้พื้นที่เก็บข้อมูลหรือประมวลผลบนเซิร์ฟเวอร์กลางผ่านเน็ต เช่น Google Drive",
+                        explanationWrong: "ผิดครับ! Cloud ในที่นี้ไม่ได้แปลว่าเมฆ แต่หมายถึง 'ระบบคลาวด์' หรือบริการผ่านเน็ต"
+                    },
+                    {
+                        question: "ข้อดีของการใช้บริการ Cloud คืออะไร?",
+                        options: [
+                            "ต้องเสียเงินแพงเสมอ",
+                            "เข้าถึงข้อมูลได้จากทุกที่ที่มีอินเทอร์เน็ต",
+                            "ข้อมูลหายบ่อย",
+                            "ทำงานช้ากว่าเครื่องปกติ"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! จุดเด่นของ Cloud คือ Anywhere Anytime ขอแค่มีเน็ตก็ทำงานได้",
+                        explanationWrong: "ไม่ถูกครับ! ข้อดีหลักคือการเข้าถึงข้อมูลได้สะดวกจากทุกที่ ไม่ต้องพก Harddisk ไปมา"
+                    },
+                    {
+                        question: "Machine Learning เกี่ยวข้องกับ AI อย่างไร?",
+                        options: [
+                            "เป็นส่วนหนึ่งของ AI ที่ทำให้คอมพิวเตอร์เรียนรู้จากข้อมูลได้",
+                            "เป็นชื่อหุ่นยนต์",
+                            "เป็นโปรแกรมซ่อมเครื่องจักร",
+                            "ไม่เกี่ยวข้องกัน"
+                        ],
+                        answer: 0,
+                        explanationCorrect: "สุดยอด! Machine Learning คือวิธีการสอนให้ AI ฉลาดขึ้นด้วยการเรียนรู้จากข้อมูล (Data)",
+                        explanationWrong: "ผิดครับ! Machine Learning คือสาขาหนึ่งของ AI ที่เน้นการเรียนรู้จากข้อมูล"
+                    },
+                    {
+                        question: "Big Data หมายถึงอะไร?",
+                        options: [
+                            "ฮาร์ดดิสก์ขนาดใหญ่",
+                            "ข้อมูลที่มีปริมาณมหาศาล หลากหลาย และเปลี่ยนแปลงรวดเร็ว",
+                            "คอมพิวเตอร์เครื่องใหญ่",
+                            "ไฟล์ภาพขนาดใหญ่"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Big Data คือข้อมูลที่เยอะ เร็ว และหลากหลาย เกินกว่าที่ระบบธรรมดาจะจัดการได้",
+                        explanationWrong: "ไม่ถูกครับ! Big Data ไม่ใช่ Hardware แต่คือ 'ลักษณะของข้อมูล' ที่มีปริมาณมหาศาล"
+                    },
+                    {
+                        question: "ข้อใดไม่ใช่เทคโนโลยีที่เปลี่ยนโลก (Disruptive Technology)?",
+                        options: [
+                            "Blockchain",
+                            "AI",
+                            "เครื่องพิมพ์ดีด",
+                            "3D Printing"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้อง! เครื่องพิมพ์ดีดเป็นเทคโนโลยีเก่าที่ถูกแทนที่ด้วยคอมพิวเตอร์แล้ว ไม่ใช่เทคโนโลยีเปลี่ยนโลกในปัจจุบัน",
+                        explanationWrong: "ผิดครับ! เครื่องพิมพ์ดีดเป็นของเก่า ส่วน Blockchain, AI, 3D Print คือเทคโนโลยีใหม่"
+                    },
+                    {
+                        question: "AR (Augmented Reality) คือเทคโนโลยีแบบใด?",
+                        options: [
+                            "โลกเสมือนจริงที่ตัดขาดจากโลกภายนอก (VR)",
+                            "การซ้อนภาพกราฟิกจำลองลงบนภาพจริงผ่านกล้อง",
+                            "การดูหนัง 3 มิติ",
+                            "การฟังเพลงสเตอริโอ"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "เก่งมาก! AR คือการเอาภาพ 3D มาซ้อนทับโลกจริง (เช่น Pokemon GO) ส่วน VR คือปิดตาเข้าโลกเสมือนเลย",
+                        explanationWrong: "ไม่ถูกครับ! AR คือการ 'เพิ่ม' (Augment) สิ่งเสมือนลงในโลกจริง ไม่ใช่การเข้าไปในโลกเสมือน (VR)"
+                    },
+                    {
+                        question: "ทำไมเราต้องเรียนรู้เรื่องเทคโนโลยีดิจิทัล?",
+                        options: [
+                            "เพราะครูบังคับ",
+                            "เพื่อความทันสมัย",
+                            "เพื่อจะได้รับมือและประยุกต์ใช้ประโยชน์จากการเปลี่ยนแปลงได้ทันท่วงที",
+                            "ไว้เล่นเกมให้เก่งขึ้น"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้องที่สุด! โลกเปลี่ยนเร็ว เราต้องรู้ทันเทคโนโลยีเพื่อใช้ประโยชน์และไม่ตกยุค",
+                        explanationWrong: "ผิดครับ! เหตุผลสำคัญคือการ 'ปรับตัว' ให้เข้ากับการเปลี่ยนแปลงของโลกยุคใหม่"
+                    }
+                ]
+            },
+            3: {
+                title: "บทที่ 3: การรู้เท่าทันสื่อ",
+                questions: [
+                    {
+                        question: "Fake News หมายถึงอะไร?",
+                        options: [
+                            "ข่าวที่มีแหล่งที่มาชัดเจน",
+                            "ข่าวที่ถูกสร้างขึ้นเพื่อหลอกลวงหรือบิดเบือนข้อเท็จจริง",
+                            "ข่าวที่ออกอากาศทางโทรทัศน์",
+                            "ข่าวที่มีคนแชร์เยอะ"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Fake News คือข่าวปลอมที่ถูกสร้างขึ้นเพื่อหลอกลวง บิดเบือน หรือสร้างความเข้าใจผิดให้กับผู้อ่าน",
+                        explanationWrong: "ไม่ถูกครับ! Fake News คือ 'ข่าวปลอม' ที่ถูกสร้างขึ้นมาเพื่อหลอกลวงคน ไม่ใช่ข่าวจริง"
+                    },
+                    {
+                        question: "ก่อนแชร์ข่าวสารใดๆ ในออนไลน์ ควรทำอย่างไร?",
+                        options: [
+                            "แชร์ให้เร็วที่สุดก่อนหมดกระแส",
+                            "ตรวจสอบแหล่งที่มาและความน่าเชื่อถือก่อน",
+                            "ดูว่ามีคนกดไลค์เยอะไหม",
+                            "ไม่ต้องตรวจสอบ ถ้าเพื่อนแชร์มาแสดงว่าจริง"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "เก่งมาก! หลักการสำคัญคือ 'ตรวจสอบก่อนแชร์' โดยดูแหล่งที่มา เปรียบเทียบหลายแหล่ง และใช้วิจารณญาณ",
+                        explanationWrong: "ผิดครับ! อย่าเพิ่งรีบแชร์ ต้อง 'ตรวจสอบแหล่งที่มา' ก่อนเสมอ"
+                    },
+                    {
+                        question: "Phishing (ฟิชชิ่ง) คืออะไร?",
+                        options: [
+                            "การตกปลาออนไลน์",
+                            "การหลอกลวงให้เหยื่อเปิดเผยข้อมูลส่วนตัวผ่านเว็บไซต์ปลอม",
+                            "การแชร์รูปภาพในโซเชียล",
+                            "โปรแกรมแก้ไขรูปภาพ"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Phishing คือการหลอกลวงโดยสร้างเว็บไซต์หรือส่งอีเมลปลอม เพื่อขโมยข้อมูลส่วนตัว เช่น รหัสผ่าน หรือเลขบัตรเครดิต",
+                        explanationWrong: "ไม่ถูกครับ! Phishing คือกลโกงออนไลน์ที่หลอกให้คนกรอกข้อมูลส่วนตัวในเว็บปลอม"
+                    },
+                    {
+                        question: "พ.ร.บ. ว่าด้วยการกระทำผิดเกี่ยวกับคอมพิวเตอร์ มีบทลงโทษสำหรับการกระทำใด?",
+                        options: [
+                            "การเล่นเกมออนไลน์",
+                            "การเข้าถึงระบบคอมพิวเตอร์ผู้อื่นโดยมิชอบ",
+                            "การซื้อของออนไลน์",
+                            "การทำรายงานด้วยคอมพิวเตอร์"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! กฎหมายลงโทษผู้ที่เข้าถึงระบบคอมพิวเตอร์ผู้อื่นโดยไม่ได้รับอนุญาต (Hacking) รวมถึงการเผยแพร่ข้อมูลเท็จ",
+                        explanationWrong: "ผิดครับ! พ.ร.บ. คอมพิวเตอร์ลงโทษเรื่อง 'การเข้าถึงระบบโดยมิชอบ' เช่น การแฮ็ก หรือเผยแพร่ข้อมูลเท็จ"
+                    },
+                    {
+                        question: "Cyberbullying หมายถึงอะไร?",
+                        options: [
+                            "การเล่นเกมออนไลน์",
+                            "การกลั่นแกล้งหรือคุกคามผู้อื่นผ่านช่องทางออนไลน์",
+                            "การเรียนรู้เกี่ยวกับไซเบอร์",
+                            "การสร้างบัญชีโซเชียลมีเดีย"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Cyberbullying คือการกลั่นแกล้ง ข่มขู่ หรือทำร้ายจิตใจผู้อื่นผ่านอินเทอร์เน็ตและโซเชียลมีเดีย",
+                        explanationWrong: "ไม่ถูกครับ! Cyberbullying คือการ 'กลั่นแกล้งออนไลน์' ซึ่งเป็นพฤติกรรมที่ผิดกฎหมาย"
+                    },
+                    {
+                        question: "ข้อมูลส่วนบุคคลข้อใดที่ไม่ควรเปิดเผยในอินเทอร์เน็ต?",
+                        options: [
+                            "ชื่อเล่น",
+                            "สีที่ชอบ",
+                            "เลขบัตรประชาชนและรหัสผ่าน",
+                            "เพลงที่ชอบฟัง"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้อง! ข้อมูลสำคัญ เช่น เลขบัตรประชาชน, รหัสผ่าน, ที่อยู่ ไม่ควรเปิดเผยในที่สาธารณะออนไลน์เด็ดขาด",
+                        explanationWrong: "ผิดครับ! เลขบัตรประชาชนและรหัสผ่านเป็นข้อมูลที่อันตรายมาก ห้ามเปิดเผยออนไลน์!"
+                    },
+                    {
+                        question: "Malware คืออะไร?",
+                        options: [
+                            "ซอฟต์แวร์สำหรับแก้ไขรูปภาพ",
+                            "โปรแกรมที่ถูกสร้างมาเพื่อทำลายหรือขโมยข้อมูล",
+                            "แอปพลิเคชันสำหรับเล่นเกม",
+                            "ระบบปฏิบัติการคอมพิวเตอร์"
+                        ],
+                        answer: 1,
+                        explanationCorrect: "ถูกต้อง! Malware (Malicious Software) คือซอฟต์แวร์ที่ถูกออกแบบมาเพื่อสร้างความเสียหาย เช่น ไวรัส, Trojan, Ransomware",
+                        explanationWrong: "ไม่ถูกครับ! Malware คือ 'โปรแกรมอันตราย' ที่สร้างมาเพื่อทำลายระบบหรือขโมยข้อมูล"
+                    },
+                    {
+                        question: "รหัสผ่านที่ปลอดภัยควรมีลักษณะอย่างไร?",
+                        options: [
+                            "ใช้วันเกิดตัวเอง",
+                            "ใช้คำว่า password123",
+                            "ผสมตัวพิมพ์ใหญ่ เล็ก ตัวเลข และอักขระพิเศษ",
+                            "ใช้ชื่อตัวเอง"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "เก่งมาก! รหัสผ่านที่ดีควรมีอย่างน้อย 8 ตัวอักษร ผสมตัวพิมพ์ใหญ่ เล็ก ตัวเลข และอักขระพิเศษ เช่น P@ssW0rd!",
+                        explanationWrong: "ผิดครับ! รหัสผ่านที่ปลอดภัยต้อง 'ซับซ้อน' ผสม ตัวใหญ่ + เล็ก + ตัวเลข + สัญลักษณ์"
+                    },
+                    {
+                        question: "Netiquette หมายถึงอะไร?",
+                        options: [
+                            "เกมออนไลน์ประเภทหนึ่ง",
+                            "ชื่อเครือข่ายสังคมออนไลน์",
+                            "มารยาทในการใช้อินเทอร์เน็ต",
+                            "โปรแกรมป้องกันไวรัส"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้อง! Netiquette = Network + Etiquette หมายถึงมารยาทหรือข้อปฏิบัติที่ดีในการใช้งานอินเทอร์เน็ต",
+                        explanationWrong: "ไม่ถูกครับ! Netiquette มาจาก Net + Etiquette แปลว่า 'มารยาทการใช้เน็ต'"
+                    },
+                    {
+                        question: "หากพบเห็นการกลั่นแกล้งออนไลน์ ควรทำอย่างไร?",
+                        options: [
+                            "เข้าไปด่ากลับ",
+                            "แชร์ต่อให้เพื่อนดู",
+                            "แจ้งผู้ใหญ่ที่ไว้ใจและรายงานผ่านระบบของแพลตฟอร์ม",
+                            "ทำเฉยๆ ไม่ต้องสนใจ"
+                        ],
+                        answer: 2,
+                        explanationCorrect: "ถูกต้อง! หากพบ Cyberbullying ควรแจ้งผู้ใหญ่ที่ไว้ใจ และรายงาน (Report) ผ่านระบบของแพลตฟอร์มนั้นๆ",
+                        explanationWrong: "ผิดครับ! ต้อง 'แจ้งผู้ใหญ่' และ 'รายงาน' ผ่านระบบ จะช่วยหยุดการกลั่นแกล้งได้"
+                    }
+                ]
+            }
+        };
+
+        // Determine current chapter from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const chapterId = parseInt(urlParams.get('chapter')) || 1; // Default to Chapter 1
+        const quizSet = quizDatabase[chapterId] || quizDatabase[1];
+        const quizData = quizSet.questions;
+
+        // Update Title
+        document.getElementById('quizTitle').textContent = `🎮 แบบทดสอบหลังเรียน`;
+        document.getElementById('quizSubtitle').textContent = quizSet.title;
+
+        // Helper to get back link
+        function getBackLink() {
+            return `chapter${chapterId}.html`;
+        }
+
+        // Game State
+        let currentQuestion = 0;
+        let score = 0;
+        let streak = 0;
+        let correctCount = 0;
+        let timer;
+        let timeLeft = 20;
+        let totalTime = 0;
+        let answered = false;
+        let currentShuffledOptions = [];
+        let currentCorrectIndex = 0;
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            timeLeft = 20;
+            const q = quizData[currentQuestion];
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+
+            // Shuffle Options Logic
+            let optionsWithIndex = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+            // Fisher-Yates Shuffle
+            for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+            }
+            currentShuffledOptions = optionsWithIndex.map(item => item.text);
+            currentCorrectIndex = optionsWithIndex.findIndex(item => item.originalIndex === q.answer);
+
+            document.getElementById('hudQuestion').textContent = `${currentQuestion + 1}/${quizData.length}`;
+            document.getElementById('progressFill').style.width = `${(currentQuestion / quizData.length) * 100}%`;
+            document.getElementById('hudTimer').textContent = timeLeft;
+            document.getElementById('hudTimer').classList.remove('timer-warning');
+
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = `
+                <div class="question-card" id="qCard">
+                    <div class="q-number">คำถามที่ ${currentQuestion + 1} จาก ${quizData.length}</div>
+                    <div class="q-text">${q.question}</div>
+                    <div class="options-grid">
+                        ${currentShuffledOptions.map((opt, i) => `
+                            <button class="option-btn" id="opt-${i}" onclick="selectAnswer(${i})">
+                                <span class="option-letter">${letters[i]}</span>
+                                <span>${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="feedback-box" id="feedbackBox">
+                        <div class="feedback-icon" id="feedbackIcon"></div>
+                        <div class="feedback-title" id="feedbackTitle"></div>
+                        <div class="feedback-explain" id="feedbackExplain"></div>
+                    </div>
+                    <div class="next-btn-area" id="nextBtnArea">
+                        <button class="next-btn" onclick="nextQuestion()">
+                            ${currentQuestion < quizData.length - 1 ? '➡️ ข้อถัดไป' : '🏆 ดูผลคะแนน'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('hudTimer').textContent = timeLeft;
+
+                if (timeLeft <= 5) {
+                    document.getElementById('hudTimer').classList.add('timer-warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+
+                totalTime++;
+            }, 1000);
+        }
+
+        function timeUp() {
+            if (answered) return;
+            answered = true;
+            streak = 0;
+
+            const q = quizData[currentQuestion];
+
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`opt-${i}`).classList.add('disabled');
+            }
+
+            document.getElementById(`opt-${currentCorrectIndex}`).classList.add('show-correct');
+            showFeedback(false, '⏰ หมดเวลา! ' + q.explanationWrong);
+            document.getElementById('qCard').classList.add('shake');
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+
+            const q = quizData[currentQuestion];
+            const isCorrect = index === currentCorrectIndex;
+
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`opt-${i}`);
+                if (btn) btn.classList.add('disabled');
+            }
+
+            if (isCorrect) {
+                document.getElementById(`opt-${index}`).classList.add('correct');
+                document.getElementById('qCard').classList.add('bounce');
+
+                let bonus = Math.max(1, Math.ceil(timeLeft / 5));
+                score += bonus;
+                correctCount++;
+                streak++;
+
+                document.getElementById('hudScore').textContent = score;
+                showFeedback(true, q.explanationCorrect);
+
+                if (streak >= 3) {
+                    showStreak(streak);
+                }
+                createParticles();
+
+            } else {
+                document.getElementById(`opt-${index}`).classList.add('wrong');
+                document.getElementById(`opt-${currentCorrectIndex}`).classList.add('show-correct');
+                document.getElementById('qCard').classList.add('shake');
+                streak = 0;
+                showFeedback(false, q.explanationWrong);
+            }
+        }
+
+        function showFeedback(isCorrect, text) {
+            const box = document.getElementById('feedbackBox');
+            const icon = document.getElementById('feedbackIcon');
+            const title = document.getElementById('feedbackTitle');
+            const explain = document.getElementById('feedbackExplain');
+
+            box.className = 'feedback-box show ' + (isCorrect ? 'correct-feedback' : 'wrong-feedback');
+            icon.textContent = isCorrect ? '🎉' : '❌';
+            title.textContent = isCorrect ? 'ถูกต้อง!' : 'ไม่ถูกต้อง';
+            explain.textContent = text;
+
+            document.getElementById('nextBtnArea').classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= quizData.length) {
+                showResult();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('gameArea').style.display = 'none';
+            const resultScreen = document.getElementById('resultScreen');
+
+            const percent = Math.round((correctCount / quizData.length) * 100);
+            let emoji, title, detail;
+
+            if (percent >= 80) {
+                emoji = '🏆';
+                title = 'ยอดเยี่ยม!';
+                detail = 'คุณเป็นผู้เชี่ยวชาญด้านนี้ตัวจริง!';
+            } else if (percent >= 60) {
+                emoji = '⭐';
+                title = 'ดีมาก!';
+                detail = 'ทำได้ดีมากครับ ฝึกฝนอีกนิดจะเก่งขึ้นแน่นอน!';
+            } else if (percent >= 40) {
+                emoji = '💪';
+                title = 'พยายามดี!';
+                detail = 'ลองทบทวนบทเรียนแล้วมาท้าทายใหม่นะ!';
+            } else {
+                emoji = '📚';
+                title = 'สู้ๆ!';
+                detail = 'กลับไปศึกษาเนื้อหาในบทเรียนอีกรอบ แล้วมาแก้ตัวใหม่!';
+            }
+
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const backLink = getBackLink();
+
+            resultScreen.innerHTML = `
+                <div class="result-emoji">${emoji}</div>
+                <div class="result-title">${title}</div>
+                <div class="result-score">${correctCount} / ${quizData.length}</div>
+                <div class="result-detail">${detail}</div>
+                <div class="result-stats">
+                    <div class="stat-box green">
+                        <div class="stat-num">${correctCount}</div>
+                        <div class="stat-lbl">ตอบถูก</div>
+                    </div>
+                    <div class="stat-box red">
+                        <div class="stat-num">${quizData.length - correctCount}</div>
+                        <div class="stat-lbl">ตอบผิด</div>
+                    </div>
+                    <div class="stat-box yellow">
+                        <div class="stat-num">${score}</div>
+                        <div class="stat-lbl">คะแนนรวม</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num" style="color: #4facfe;">${minutes}:${seconds.toString().padStart(2, '0')}</div>
+                        <div class="stat-lbl">เวลาที่ใช้</div>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <a href="quiz.html?chapter=${chapterId}" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: #0f0c29; font-weight: 700;">🔄 ทำอีกครั้ง</a>
+                    <a href="${backLink}" class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: #fff;">📖 กลับไปทบทวน</a>
+                    <a href="curriculum.html" class="btn btn-secondary">📚 กลับสู่หลักสูตร</a>
+                </div>
+            `;
+
+            resultScreen.classList.add('show');
+
+            if (percent >= 80) {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => createParticles(), i * 100);
+                }
+            }
+        }
+
+        function showStreak(count) {
+            const popup = document.getElementById('streakPopup');
+            popup.textContent = `🔥 ${count} Streak!`;
+            popup.className = 'streak-popup show';
+            setTimeout(() => {
+                popup.className = 'streak-popup';
+            }, 1200);
+        }
+
+        function createParticles() {
+            const emojis = ['⭐', '🌟', '✨', '💫', '🎉', '🎊', '🤖', '📱', '☁️'];
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = Math.random() * window.innerWidth + 'px';
+                particle.style.top = (Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2) + 'px';
+                particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                particle.style.animation = `confetti ${Math.random() * 0.5 + 0.8}s ease forwards`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1500);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

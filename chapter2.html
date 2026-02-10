@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 02: เทคโนโลยีดิจิทัล - โรงเรียนทัพทันอนุสรณ์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .lesson-header {
+            background: linear-gradient(-45deg, #003580, #0a5eb8, #0074d9, #004ba0);
+            background-size: 400% 400%;
+            animation: heroGradient 12s ease infinite;
+            color: var(--white);
+            padding: 130px 0 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 25% 40%, rgba(255, 215, 0, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(79, 172, 254, 0.1) 0%, transparent 50%);
+        }
+
+        .lesson-header .wave-divider {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            z-index: 3;
+            line-height: 0;
+        }
+
+        .lesson-header .wave-divider svg {
+            width: 100%;
+            height: 50px;
+        }
+
+        .lesson-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            z-index: 2;
+        }
+
+        .lesson-header p {
+            position: relative;
+            z-index: 2;
+            opacity: 0.85;
+        }
+
+        .lesson-content {
+            padding: 60px 0;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 40px;
+            border: 3px solid rgba(10, 94, 184, 0.1);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            border: 1px solid rgba(10, 94, 184, 0.05);
+            transition: var(--transition);
+        }
+
+        .content-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .content-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .content-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--accent-gold));
+            border-radius: 2px;
+        }
+
+        .content-card p {
+            color: var(--text-medium);
+            line-height: 1.8;
+        }
+
+        .key-concept {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 22px;
+            background: var(--bg-light);
+            border-radius: 14px;
+            transition: var(--transition);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .key-concept:hover {
+            transform: translateX(8px);
+            background: linear-gradient(90deg, rgba(10, 94, 184, 0.04), transparent);
+            box-shadow: var(--shadow-sm);
+            border-left-color: var(--accent-yellow);
+        }
+
+        .concept-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .concept-text h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .concept-text p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .breadcrumb {
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .breadcrumb a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .action-area {
+            text-align: center;
+            margin-top: 60px;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, rgba(10, 94, 184, 0.04), rgba(79, 172, 254, 0.08));
+            border-radius: 20px;
+            border: 1px solid rgba(10, 94, 184, 0.08);
+        }
+
+        .action-area h3 {
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .action-area p {
+            color: var(--text-light);
+        }
+
+        h2 {
+            color: var(--text-dark);
+            font-size: 1.6rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container navbar-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.svg" alt="Logo" height="50">
+                <span class="logo-text">โรงเรียนทัพทันอนุสรณ์</span>
+            </a>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="curriculum.html" class="active">หลักสูตร</a></li>
+                <li><a href="index.html#contact">ติดต่อเรา</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="lesson-header">
+        <div class="container">
+            <h1 class="lesson-title">💻 เทคโนโลยีดิจิทัล</h1>
+            <p>Digital Technology</p>
+        </div>
+        <div class="wave-divider">
+            <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M0,25 C360,50 720,0 1080,25 C1260,38 1380,30 1440,25 L1440,50 L0,50 Z" fill="#ffffff" />
+            </svg>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="container lesson-content">
+        <div class="breadcrumb">
+            <a href="curriculum.html">หลักสูตร</a> > <span>บทที่ 2: เทคโนโลยีดิจิทัล</span>
+        </div>
+
+        <!-- Introduction -->
+        <div class="content-card animate-on-scroll">
+            <h3>🤖 บทนำ</h3>
+            <p>
+                ในยุคปัจจุบัน เทคโนโลยีดิจิทัลได้เข้ามามีบทบาทสำคัญในการขับเคลื่อนสังคมและเศรษฐกิจ
+                การเข้าใจและสามารถใช้งานเทคโนโลยีดิจิทัลได้อย่างมีประสิทธิภาพจึงเป็นทักษะที่จำเป็นสำหรับทุกคน
+                บทเรียนนี้จะพาทุกคนไปทำความรู้จักกับเทคโนโลยีใหม่ๆ ที่กำลังเปลี่ยนโลกของเรา
+            </p>
+        </div>
+
+        <!-- Video Section -->
+        <h2 style="margin-bottom: 20px;">🎬 วิดีโอประกอบการเรียนรู้</h2>
+        <div class="video-container animate-on-scroll">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/mNPhQaO51Y8"
+                title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        </div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://www.youtube.com/watch?v=mNPhQaO51Y8" target="_blank"
+                style="color: var(--primary-blue); font-size: 0.9rem;">(หากวิดีโอไม่เล่น คลิกที่นี่เพื่อรับชมบน
+                YouTube)</a>
+        </div>
+
+        <!-- Main Concepts -->
+        <div class="content-card animate-on-scroll">
+            <h3>💡 หัวข้อการเรียนรู้</h3>
+
+            <div class="key-concept">
+                <div class="concept-icon">📱</div>
+                <div class="concept-text">
+                    <h4>วิวัฒนาการของเทคโนโลยี</h4>
+                    <p>เรียนรู้ประวัติความเป็นมาและการเปลี่ยนแปลงของเทคโนโลยีตั้งแต่อดีตจนถึงปัจจุบัน
+                        ที่ส่งผลกระทบต่อวิถีชีวิตและการทำงานของมนุษย์</p>
+                </div>
+            </div>
+
+            <div class="key-concept">
+                <div class="concept-icon">☁️</div>
+                <div class="concept-text">
+                    <h4>IoT (Internet of Things)</h4>
+                    <p>อินเทอร์เน็ตของสรรพสิ่ง คือการที่อุปกรณ์ต่างๆ
+                        สามารถเชื่อมโยงและส่งข้อมูลถึงกันผ่านอินเทอร์เน็ตได้
+                        เช่น Smart Home, Smart Watch</p>
+                </div>
+            </div>
+
+            <div class="key-concept">
+                <div class="concept-icon">🤖</div>
+                <div class="concept-text">
+                    <h4>AI (Artificial Intelligence)</h4>
+                    <p>ปัญญาประดิษฐ์ คือการทำให้คอมพิวเตอร์มีความสามารถคล้ายมนุษย์ เช่น การคิด วิเคราะห์ ตัดสินใจ
+                        และการเรียนรู้ (Machine Learning)</p>
+                </div>
+            </div>
+
+            <div class="key-concept">
+                <div class="concept-icon">☁️</div>
+                <div class="concept-text">
+                    <h4>Cloud Computing</h4>
+                    <p>การประมวลผลแบบคลาวด์ คือการให้บริการทรัพยากรคอมพิวเตอร์ผ่านอินเทอร์เน็ต เช่น พื้นที่จัดเก็บข้อมูล
+                        โปรแกรม และระบบประมวลผล</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Area -->
+        <div class="action-area animate-on-scroll">
+            <h3>🎯 เรียนจบแล้ว?</h3>
+            <p style="margin-bottom: 20px;">ทดสอบความรู้ของคุณผ่านเกมจับคู่เทคโนโลยี!</p>
+            <a href="game_chapter2.html" class="btn btn-primary" style="font-size: 1.2rem; padding: 16px 45px;">🎮
+                เล่นเกมทดสอบความรู้</a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3 class="footer-brand">โรงเรียนทัพทันอนุสรณ์</h3>
+                    <p style="color: #aab0d0;">มุ่งมั่นพัฒนาผู้เรียนให้มีความเป็นเลิศทางวิชาการและเทคโนโลยี</p>
+                </div>
+                <div class="footer-links">
+                    <h4>เมนู</h4>
+                    <ul>
+                        <li><a href="index.html">หน้าแรก</a></li>
+                        <li><a href="curriculum.html">หลักสูตร</a></li>
+                        <li><a href="index.html#contact">ติดต่อเรา</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>ติดตามเรา</h4>
+                    <p style="color: #aab0d0;">Facebook: โรงเรียนทัพทันอนุสรณ์</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 โรงเรียนทัพทันอนุสรณ์. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        mobileBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileBtn.classList.toggle('active');
+        });
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
