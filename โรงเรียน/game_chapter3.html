@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕵️ เกมจับข่าวปลอม - บทที่ 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2e, #1a1a4e, #0d0d3a);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .game-wrapper {
+            max-width: 700px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .game-logo {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .start-screen h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .start-screen .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .how-to-play {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .how-to-play h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .how-to-play .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .how-to-play .step-icon {
+            font-size: 1.4rem;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: #fff;
+            padding: 18px 60px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 35px rgba(255, 107, 107, 0.6);
+        }
+
+        /* HUD */
+        .game-hud {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hud-item {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #fff;
+            text-align: center;
+            flex: 1;
+        }
+
+        .hud-label {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hud-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .hud-value.score-val {
+            color: #ffd700;
+        }
+
+        .hud-value.q-val {
+            color: #4facfe;
+        }
+
+        .hud-value.streak-val {
+            color: #ff6b6b;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd700);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        /* News Card */
+        .news-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px 30px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .news-source {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 5px 14px;
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            margin-bottom: 18px;
+        }
+
+        .news-headline {
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .news-detail {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        /* Swipe Buttons */
+        .judge-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .judge-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .judge-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-real {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-real:hover {
+            box-shadow: 0 6px 25px rgba(40, 167, 69, 0.5);
+        }
+
+        .btn-fake {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-fake:hover {
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .judge-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Feedback */
+        .feedback-box {
+            display: none;
+            padding: 20px;
+            border-radius: 14px;
+            margin-top: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .feedback-box.show {
+            display: block;
+        }
+
+        .feedback-box.correct {
+            background: rgba(40, 167, 69, 0.15);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .feedback-box.wrong {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feedback-icon {
+            font-size: 1.5rem;
+        }
+
+        .feedback-title {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .feedback-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .next-btn {
+            display: none;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            color: #0a0a2e;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+            }
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-120px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .news-card.shake-anim {
+            animation: shake 0.4s ease;
+        }
+
+        .news-card.bounce-anim {
+            animation: bounce 0.4s ease;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-screen.show {
+            display: block;
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .result-detail {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .result-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 15px 20px;
+            min-width: 90px;
+        }
+
+        .stat-box .stat-num {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .stat-box .stat-lbl {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-box.green .stat-num {
+            color: #28a745;
+        }
+
+        .stat-box.red .stat-num {
+            color: #ff6b6b;
+        }
+
+        .stat-box.yellow .stat-num {
+            color: #ffd700;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            font-size: 0.95rem;
+        }
+
+        /* Streak popup */
+        .streak-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            z-index: 100;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .streak-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            animation: streakAnim 1s ease forwards;
+        }
+
+        @keyframes streakAnim {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            30% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+
+            70% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -70%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .game-wrapper {
+                margin-top: 90px;
+            }
+
+            .start-screen h1 {
+                font-size: 1.5rem;
+            }
+
+            .news-headline {
+                font-size: 1.15rem;
+            }
+
+            .judge-btn {
+                font-size: 0.95rem;
+                padding: 14px;
+            }
+
+            .result-score {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" style="background: rgba(10, 10, 46, 0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+        <div class="container navbar-content">
+            <a href="index.html" class="logo" style="color: #fff;">
+                <img src="images/LOGOTT.png" alt="Logo" height="50">
+                <span class="logo-text">โรงเรียนทัพทันอนุสรณ์</span>
+            </a>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <span class="bar" style="background: #fff;"></span>
+                <span class="bar" style="background: #fff;"></span>
+                <span class="bar" style="background: #fff;"></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" style="color: rgba(255,255,255,0.8);">หน้าแรก</a></li>
+                <li><a href="curriculum.html" style="color: rgba(255,255,255,0.8);">หลักสูตร</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="streak-popup" id="streakPopup"></div>
+
+    <div class="game-wrapper">
+
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <div class="game-logo">🕵️</div>
+            <h1>เกมจับข่าวปลอม!</h1>
+            <p class="subtitle">บทที่ 3: การรู้เท่าทันสื่อ</p>
+
+            <div class="how-to-play">
+                <h3>📖 วิธีเล่น</h3>
+                <div class="step">
+                    <span class="step-icon">📰</span>
+                    <span>อ่านหัวข้อข่าวที่ปรากฏบนหน้าจอ</span>
+                </div>
+                <div class="step">
+                    <span class="step-icon">🤔</span>
+                    <span>วิเคราะห์ว่าข่าวนี้ <b>จริง</b> หรือ <b>ปลอม</b></span>
+                </div>
+                <div class="step">
+                    <span class="step-icon">👆</span>
+                    <span>กดปุ่ม "ข่าวจริง" ✅ หรือ "ข่าวปลอม" ❌</span>
+                </div>
+                <div class="step">
+                    <span class="step-icon">🏆</span>
+                    <span>ตอบถูกมากที่สุดเพื่อเป็นนักสืบข่าวมือโปร!</span>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">🔍 เริ่มสืบข่าว!</button>
+        </div>
+
+        <!-- Game Area -->
+        <div id="gameArea" style="display: none;">
+            <div class="game-hud">
+                <div class="hud-item">
+                    <div class="hud-label">คะแนน</div>
+                    <div class="hud-value score-val" id="hudScore">0</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">ข้อที่</div>
+                    <div class="hud-value q-val" id="hudQuestion">1/12</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">Streak</div>
+                    <div class="hud-value streak-val" id="hudStreak">🔥 0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="newsContainer"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div class="result-screen" id="resultScreen"></div>
+    </div>
+
+    <script>
+        // Mobile menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const navLinksEl = document.getElementById('nav-links');
+        mobileBtn.addEventListener('click', () => {
+            navLinksEl.classList.toggle('active');
+            mobileBtn.classList.toggle('active');
+        });
+
+        // News items database
+        const newsDatabase = [
+            {
+                headline: "วัยรุ่นกินมาม่าทุกวันเป็นเวลา 10 ปี กลายเป็นมาม่า!",
+                source: "เว็บไซต์ไม่ระบุชื่อ",
+                detail: "มีการแชร์กันอย่างแพร่หลายในโซเชียลมีเดีย พร้อมรูปที่ดูเหมือนถูกตัดต่อ",
+                isFake: true,
+                explanation: "ข่าวนี้เป็นข่าวปลอม! มนุษย์ไม่สามารถกลายเป็นอาหารได้ ข่าวลักษณะนี้มักใช้หัวข้อแปลกเพื่อดึงดูดคลิก (Clickbait)"
+            },
+            {
+                headline: "องค์การอนามัยโลก (WHO) แนะนำให้ล้างมือบ่อยๆ เพื่อป้องกันโรคติดต่อ",
+                source: "WHO (องค์การอนามัยโลก)",
+                detail: "เผยแพร่ผ่านเว็บไซต์ทางการของ WHO พร้อมงานวิจัยสนับสนุน",
+                isFake: false,
+                explanation: "ข่าวนี้เป็นข่าวจริง! WHO แนะนำให้ล้างมือเป็นประจำ ซึ่งเป็นวิธีป้องกันโรคที่ได้ผลดีตามหลักวิทยาศาสตร์"
+            },
+            {
+                headline: "แชร์โพสต์นี้ 10 ครั้ง จะได้รับเงิน 5,000 บาทจาก Facebook!",
+                source: "โพสต์ต่อๆ กันใน Facebook",
+                detail: "มีคนแชร์หลายหมื่นครั้ง และมีความคิดเห็นว่า 'ได้จริงๆ!'",
+                isFake: true,
+                explanation: "ข่าวปลอม! Facebook ไม่เคยแจกเงินจากการแชร์โพสต์ นี่คือกลโกงเพื่อเพิ่มยอดแชร์และอาจนำไปสู่การหลอกลวง"
+            },
+            {
+                headline: "กระทรวงศึกษาธิการประกาศใช้หลักสูตร Coding ในโรงเรียน",
+                source: "กระทรวงศึกษาธิการ",
+                detail: "มีประกาศอย่างเป็นทางการและเผยแพร่ผ่านเว็บไซต์ราชกิจจานุเบกษา",
+                isFake: false,
+                explanation: "ข่าวนี้เป็นข่าวจริง! กระทรวงศึกษาธิการได้บรรจุวิชา Coding (วิทยาการคำนวณ) ในหลักสูตรแกนกลางฯ"
+            },
+            {
+                headline: "กินน้ำมะนาวร้อนๆ ตอนเช้า รักษามะเร็งได้ 100%!",
+                source: "ไลน์กลุ่มสุขภาพ",
+                detail: "มีการแชร์ต่อๆ กันโดยอ้างว่า 'หมอบอก' แต่ไม่ระบุชื่อแพทย์",
+                isFake: true,
+                explanation: "ข่าวปลอม! ไม่มีงานวิจัยทางการแพทย์ที่ยืนยันว่าน้ำมะนาวรักษามะเร็งได้ การอ้างอิงแบบ 'หมอบอก' โดยไม่ระบุแหล่งที่มาที่ชัดเจนไม่ควรเชื่อ"
+            },
+            {
+                headline: "NASA ค้นพบน้ำในรูปแบบน้ำแข็งบนดวงจันทร์",
+                source: "NASA (องค์การนาซา)",
+                detail: "ตีพิมพ์ในวารสาร Nature และเผยแพร่ผ่านเว็บไซต์ทางการของ NASA",
+                isFake: false,
+                explanation: "ข่าวจริง! NASA ค้นพบน้ำแข็งที่ขั้วใต้ของดวงจันทร์จริงๆ โดยใช้ข้อมูลจากยานอวกาศ ข่าวนี้มีแหล่งที่มาที่น่าเชื่อถือ"
+            },
+            {
+                headline: "⚡ ด่วน! ปิดสัญญาณ WiFi ก่อนนอน ไม่งั้นสมองจะเสื่อม!!",
+                source: "เพจ Facebook ที่ไม่มีตัวตน",
+                detail: "ใช้ตัวอักษรเร่งเร้า มีรูปกราฟิกน่ากลัว และไม่มีงานวิจัยอ้างอิง",
+                isFake: true,
+                explanation: "ข่าวปลอม! คลื่น WiFi มีความปลอดภัยตามมาตรฐานสากล ข่าวที่ใช้คำว่า 'ด่วน!' หรือ '!!' มักเป็นข่าวที่ต้องระวัง"
+            },
+            {
+                headline: "พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA) มีผลบังคับใช้แล้วในประเทศไทย",
+                source: "สำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล",
+                detail: "เป็นกฎหมายที่คุ้มครองสิทธิของเจ้าของข้อมูลส่วนบุคคล",
+                isFake: false,
+                explanation: "ข่าวจริง! PDPA (Personal Data Protection Act) มีผลบังคับใช้ในประเทศไทยตั้งแต่ 1 มิถุนายน 2565"
+            },
+            {
+                headline: "ส่งหมายเลขบัตรประชาชนมาให้เราตรวจสอบ จะได้รับเงินช่วยเหลือ 15,000 บาท",
+                source: "ข้อความ SMS จากเบอร์ไม่รู้จัก",
+                detail: "ลิงก์ที่แนบมาเป็น URL ที่ดูไม่คุ้นเคย",
+                isFake: true,
+                explanation: "ข่าวปลอม! นี่คือกลโกงแบบ Phishing! หน่วยงานราชการจะไม่ขอเลขบัตรประชาชนผ่าน SMS และไม่มีลิงก์แปลกๆ"
+            },
+            {
+                headline: "Google ประกาศเปิดตัว AI รุ่นใหม่ที่สามารถสร้างภาพได้เหมือนจริง",
+                source: "Google Official Blog",
+                detail: "เผยแพร่ผ่าน blog.google พร้อมตัวอย่างและบทความวิจัย",
+                isFake: false,
+                explanation: "ข่าวจริง! Google พัฒนา AI สร้างภาพขั้นสูงหลายตัว เช่น Imagen ข่าวนี้มาจากแหล่งที่มาที่เชื่อถือได้"
+            },
+            {
+                headline: "นักวิทยาศาสตร์ยืนยัน! โลกจะแบนจริงๆ ไม่ใช่ทรงกลม!",
+                source: "เว็บ Flat Earth Society",
+                detail: "อ้างว่ามีนักวิทยาศาสตร์ 'หลายคน' ยืนยัน แต่ไม่ระบุชื่อ",
+                isFake: true,
+                explanation: "ข่าวปลอม! หลักฐานทางวิทยาศาสตร์ยืนยันว่าโลกเป็นทรงกลม ข่าวที่อ้าง 'นักวิทยาศาสตร์หลายคน' โดยไม่ระบุชื่อไม่ควรเชื่อ"
+            },
+            {
+                headline: "สำนักงาน กสทช. เตือนภัย! ระวังมิจฉาชีพโทรหลอกให้โอนเงิน",
+                source: "สำนักงาน กสทช.",
+                detail: "ประกาศอย่างเป็นทางการผ่านเว็บไซต์และสื่อมวลชน",
+                isFake: false,
+                explanation: "ข่าวจริง! กสทช. มีการเตือนภัยอย่างสม่ำเสมอเกี่ยวกับมิจฉาชีพที่โทรหลอกลวง ควรระวังเสมอ!"
+            }
+        ];
+
+        // Game State
+        let currentNewsIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let shuffledNews = [];
+        let answered = false;
+
+        function shuffleArray(arr) {
+            const shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            shuffledNews = shuffleArray(newsDatabase);
+            currentNewsIndex = 0;
+            score = 0;
+            correctCount = 0;
+            streak = 0;
+            bestStreak = 0;
+            showNews();
+        }
+
+        function showNews() {
+            answered = false;
+            const news = shuffledNews[currentNewsIndex];
+            const total = shuffledNews.length;
+
+            document.getElementById('hudQuestion').textContent = `${currentNewsIndex + 1}/${total}`;
+            document.getElementById('hudScore').textContent = score;
+            document.getElementById('hudStreak').textContent = `🔥 ${streak}`;
+            document.getElementById('progressFill').style.width = `${(currentNewsIndex / total) * 100}%`;
+
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = `
+                <div class="news-card" id="newsCard">
+                    <div class="news-source">📰 ${news.source}</div>
+                    <div class="news-headline">"${news.headline}"</div>
+                    <div class="news-detail">💬 ${news.detail}</div>
+
+                    <div class="judge-buttons">
+                        <button class="judge-btn btn-real" id="btnReal" onclick="judgeNews(false)">
+                            ✅ ข่าวจริง
+                        </button>
+                        <button class="judge-btn btn-fake" id="btnFake" onclick="judgeNews(true)">
+                            ❌ ข่าวปลอม
+                        </button>
+                    </div>
+
+                    <div class="feedback-box" id="feedbackBox">
+                        <div class="feedback-header">
+                            <span class="feedback-icon" id="fbIcon"></span>
+                            <span class="feedback-title" id="fbTitle"></span>
+                        </div>
+                        <div class="feedback-text" id="fbText"></div>
+                    </div>
+
+                    <button class="next-btn" id="nextBtn" onclick="nextNews()">
+                        ${currentNewsIndex < total - 1 ? '➡️ ข่าวถัดไป' : '🏆 ดูผลคะแนน'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function judgeNews(playerSaysFake) {
+            if (answered) return;
+            answered = true;
+
+            const news = shuffledNews[currentNewsIndex];
+            const isCorrect = (playerSaysFake === news.isFake);
+
+            document.getElementById('btnReal').disabled = true;
+            document.getElementById('btnFake').disabled = true;
+
+            const card = document.getElementById('newsCard');
+            const fb = document.getElementById('feedbackBox');
+            const fbIcon = document.getElementById('fbIcon');
+            const fbTitle = document.getElementById('fbTitle');
+            const fbText = document.getElementById('fbText');
+
+            if (isCorrect) {
+                correctCount++;
+                streak++;
+                if (streak > bestStreak) bestStreak = streak;
+                let bonus = 10 + (streak > 1 ? streak * 2 : 0);
+                score += bonus;
+
+                card.classList.add('bounce-anim');
+                fb.className = 'feedback-box show correct';
+                fbIcon.textContent = '🎉';
+                fbTitle.textContent = 'ถูกต้อง! +' + bonus + ' คะแนน';
+                fbText.textContent = news.explanation;
+
+                document.getElementById('hudScore').textContent = score;
+                document.getElementById('hudStreak').textContent = `🔥 ${streak}`;
+
+                if (streak >= 3) showStreak(streak);
+                createParticles();
+            } else {
+                streak = 0;
+                card.classList.add('shake-anim');
+                fb.className = 'feedback-box show wrong';
+                fbIcon.textContent = '❌';
+                fbTitle.textContent = 'ไม่ถูกต้อง!';
+                fbText.textContent = news.explanation;
+
+                document.getElementById('hudStreak').textContent = `🔥 ${streak}`;
+            }
+
+            document.getElementById('nextBtn').classList.add('show');
+        }
+
+        function nextNews() {
+            currentNewsIndex++;
+            if (currentNewsIndex >= shuffledNews.length) {
+                showResult();
+            } else {
+                showNews();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('gameArea').style.display = 'none';
+            const resultScreen = document.getElementById('resultScreen');
+            const total = shuffledNews.length;
+            const percent = Math.round((correctCount / total) * 100);
+
+            let emoji, title, detail;
+            if (percent >= 90) {
+                emoji = '🏆';
+                title = 'นักสืบข่าวมือโปร!';
+                detail = 'คุณเก่งมาก! แยกข่าวจริงกับข่าวปลอมได้อย่างแม่นยำ!';
+            } else if (percent >= 70) {
+                emoji = '⭐';
+                title = 'ดีมาก!';
+                detail = 'คุณมีทักษะการวิเคราะห์ข่าวที่ดี ฝึกอีกนิดจะเป็นมือโปร!';
+            } else if (percent >= 50) {
+                emoji = '💪';
+                title = 'พยายามดี!';
+                detail = 'ลองทบทวนบทเรียนแล้วมาท้าทายใหม่นะ!';
+            } else {
+                emoji = '📚';
+                title = 'สู้ๆ!';
+                detail = 'กลับไปศึกษาเนื้อหาเรื่องการรู้เท่าทันสื่อแล้วมาแก้ตัวใหม่!';
+            }
+
+            resultScreen.innerHTML = `
+                <div class="result-emoji">${emoji}</div>
+                <div class="result-title">${title}</div>
+                <div class="result-score">${correctCount} / ${total}</div>
+                <div class="result-detail">${detail}</div>
+                <div class="result-stats">
+                    <div class="stat-box green">
+                        <div class="stat-num">${correctCount}</div>
+                        <div class="stat-lbl">ตอบถูก</div>
+                    </div>
+                    <div class="stat-box red">
+                        <div class="stat-num">${total - correctCount}</div>
+                        <div class="stat-lbl">ตอบผิด</div>
+                    </div>
+                    <div class="stat-box yellow">
+                        <div class="stat-num">${score}</div>
+                        <div class="stat-lbl">คะแนนรวม</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num" style="color: #ff6b6b;">🔥 ${bestStreak}</div>
+                        <div class="stat-lbl">Best Streak</div>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <a href="game_chapter3.html" class="btn btn-primary" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: #fff; font-weight: 700;">🔄 เล่นอีกครั้ง</a>
+                    <a href="chapter3.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: #fff;">📖 กลับไปทบทวน</a>
+                    <a href="curriculum.html" class="btn btn-secondary">📚 กลับสู่หลักสูตร</a>
+                </div>
+            `;
+
+            resultScreen.classList.add('show');
+
+            if (percent >= 80) {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => createParticles(), i * 100);
+                }
+            }
+        }
+
+        function showStreak(count) {
+            const popup = document.getElementById('streakPopup');
+            popup.textContent = `🔥 ${count} Streak!`;
+            popup.className = 'streak-popup show';
+            setTimeout(() => { popup.className = 'streak-popup'; }, 1200);
+        }
+
+        function createParticles() {
+            const emojis = ['⭐', '🌟', '✨', '💫', '🎉', '🕵️', '📰', '🔍', '🛡️'];
+            for (let i = 0; i < 5; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                p.style.left = Math.random() * window.innerWidth + 'px';
+                p.style.top = (Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2) + 'px';
+                p.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                p.style.animation = `confetti ${Math.random() * 0.5 + 0.8}s ease forwards`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1500);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
